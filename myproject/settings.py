@@ -1,17 +1,32 @@
 from pathlib import Path
 import os
 
+# --------------------------
+# BASE DIRECTORY
+# --------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# --------------------------
+# SECRET KEY
+# --------------------------
 SECRET_KEY = os.environ.get(
     "DJANGO_SECRET_KEY",
     "django-insecure-d&ktpii#!oa+%gf709&s!^srvco&v1b=^@8g2$cewu$xqlg%pk"
 )
 
+# --------------------------
+# DEBUG MODE
+# --------------------------
 DEBUG = os.environ.get("DJANGO_DEBUG", "True").lower() in ("1", "true", "yes")
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+# --------------------------
+# ALLOWED HOSTS
+# --------------------------
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",")
 
+# --------------------------
+# INSTALLED APPS
+# --------------------------
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -20,12 +35,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'myapp',
+    'myapp',  # Your app
 ]
 
+# --------------------------
+# MIDDLEWARE
+# --------------------------
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # For serving static files in production
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -34,8 +52,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# --------------------------
+# ROOT URL CONFIG
+# --------------------------
 ROOT_URLCONF = 'myproject.urls'
 
+# --------------------------
+# TEMPLATES
+# --------------------------
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -51,8 +75,14 @@ TEMPLATES = [
     },
 ]
 
+# --------------------------
+# WSGI APPLICATION
+# --------------------------
 WSGI_APPLICATION = 'myproject.wsgi.application'
 
+# --------------------------
+# DATABASE CONFIGURATION
+# --------------------------
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -65,16 +95,38 @@ DATABASES = {
     }
 }
 
-# Static files (CSS, JavaScript, Images)
+# --------------------------
+# PASSWORD VALIDATORS
+# --------------------------
+AUTH_PASSWORD_VALIDATORS = [
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
+]
+
+# --------------------------
+# INTERNATIONALIZATION
+# --------------------------
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'UTC'
+USE_I18N = True
+USE_TZ = True
+
+# --------------------------
+# STATIC FILES
+# --------------------------
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
-# Use compressed manifest storage only in production to avoid dev collectstatic issues
+# Use compressed manifest storage only in production
 if not DEBUG:
     STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# Security settings for production
+# --------------------------
+# SECURITY SETTINGS FOR PRODUCTION
+# --------------------------
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SESSION_COOKIE_SECURE = True
@@ -85,17 +137,3 @@ if not DEBUG:
     SECURE_HSTS_PRELOAD = True
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
-
-AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
-]
-
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
-USE_I18N = True
-USE_TZ = True
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
