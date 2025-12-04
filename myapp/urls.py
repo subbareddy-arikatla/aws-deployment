@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import MusicianCreateView
+from .views import MusicianListCreateView, MusicianDetailView
 
 urlpatterns = [
-    path('musicians/create/', MusicianCreateView.as_view(), name='musician-create'),
+    path('musicians/', MusicianListCreateView.as_view(), name='musician-list-create'),
+    path('musicians/<int:pk>/', MusicianDetailView.as_view(), name='musician-detail'),
 ]
