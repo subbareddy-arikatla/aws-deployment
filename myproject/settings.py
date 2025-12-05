@@ -83,17 +83,29 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 # --------------------------
 # DATABASE CONFIGURATION
 # --------------------------
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DATABASE_NAME", "mydb"),
-        "USER": os.environ.get("DATABASE_USER", "postgres"),
-        "PASSWORD": os.environ.get("DATABASE_PASSWORD", "password"),
-        "HOST": os.environ.get("DATABASE_HOST", "db"),
-        "PORT": os.environ.get("DATABASE_PORT", "5432"),
-        "CONN_MAX_AGE": int(os.environ.get("DATABASE_CONN_MAX_AGE", 60)),
+if DEBUG:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ.get("DATABASE_NAME", "mydb"),
+            "USER": os.environ.get("DATABASE_USER", "postgres"),
+            "PASSWORD": os.environ.get("DATABASE_PASSWORD", "password"),
+            "HOST": os.environ.get("DATABASE_HOST", "db"),
+            "PORT": os.environ.get("DATABASE_PORT", "5432"),
+            "CONN_MAX_AGE": int(os.environ.get("DATABASE_CONN_MAX_AGE", 60)),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'myprojectdb',
+            'USER': 'testdjango',
+            'PASSWORD': os.environ.get('RDS_PASSWORD', 'password'),
+            'HOST': 'test-django-gfg.cwvqiycyi6ei.us-east-1.rds.amazonaws.com',
+            'PORT': '5432',
+        }
+    }
 
 # --------------------------
 # PASSWORD VALIDATORS
