@@ -1,0 +1,50 @@
+services:
+  db:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-mydb}
+      POSTGRES_USER: ${DATABASE_USER:-postgres}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-password}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    # Ports not exposed to host in production for security, only internal network
+    # ports:
+    #   - "5432:5432" 
+
+  web:
+    build: .
+    # Uses the default CMD from Dockerfile (gunicorn)
+    # Or explicitly:
+    command: >
+      sh -c "until pg_isready -h db -p 5432 -U ${DATABASE_USER:-postgres}; do sleep 1; done; gunicorn myproject.wsgi:application --bind 0.0.0.0:8000 --workers 3"
+    expose:
+      - "8000"
+    restart: always
+    environment:
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+      - DJANGO_DEBUG=${DJANGO_DEBUG:-False}
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DATABASE_NAME=${DATABASE_NAME:-mydb}
+      - DATABASE_USER=${DATABASE_USER:-postgres}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD:-password}
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx:latest
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+      - ./staticfiles:/myapp/staticfiles:ro
+    depends_on:
+      - web
+
+volumes:
+  db_data:
